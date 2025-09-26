@@ -52,6 +52,32 @@ class ProjectRepository {
         return querySuccess(result.affectedRows);
     }
 
+    async createProjectUsers(userIds, projectId) {
+        const values = userIds.map(id => [projectId, id]);
+        const [result] = await this.pool.query(`
+            INSERT INTO project_users (project_id, user_id)
+            VALUES ?
+            `, [values]);
+        return querySuccess(result.affectedRows)    
+    }
+
+    async deleteProjectUsers(userIds) {
+        if (!userIds || userIds.length === 0) return false;
+        const [result] = await this.pool.query(`
+            DELETE FROM project_users
+            WHERE user_id IN (?)
+        `, [userIds]);
+        return querySuccess(result.affectedRows)
+    }
+
+    async deleteProjectFromProjectUsers(projectId) {
+        const [result] = await this.pool.query(`
+            DELETE FROM project_users
+            WHERE project_id = ?
+            `, [projectId]);
+        return querySuccess(result.affectedRows)
+    }
+
 }
 
 module.exports = ProjectRepository;
