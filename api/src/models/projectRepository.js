@@ -46,10 +46,24 @@ class ProjectRepository {
     }
 
     async deleteProjectById(id) {
-        const [result] = await this.pool.query(`
-            DELETE FROM projects WHERE id = ?
-            `, [id]);
-        return querySuccess(result.affectedRows);
+        const connection = await this.pool.getConnection();
+        let success;
+        try {
+            await connection.beginTransaction();
+
+            await connection.query(`DELETE FROM project_users WHERE project_id = ?`, [id]);
+            await connection.query(`DELETE FROM projects WHERE id = ?`, [id]);
+
+            await connection.commit();
+            success = true;
+        } catch (error) {
+            await connection.rollback();
+            console.error("Error al eliminar proyecto:", error);
+            success = false;
+        } finally {
+            connection.release();
+            return success;
+        }
     }
 
     async createProjectUsers(userIds, projectId) {
@@ -67,14 +81,6 @@ class ProjectRepository {
             DELETE FROM project_users
             WHERE user_id IN (?)
         `, [userIds]);
-        return querySuccess(result.affectedRows)
-    }
-
-    async deleteProjectFromProjectUsers(projectId) {
-        const [result] = await this.pool.query(`
-            DELETE FROM project_users
-            WHERE project_id = ?
-            `, [projectId]);
         return querySuccess(result.affectedRows)
     }
 
