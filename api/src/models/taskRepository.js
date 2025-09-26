@@ -20,6 +20,16 @@ class TaskRepository {
 
     }
 
+    async updateTask(task) {
+        let [result] = await this.pool.query(`
+            UPDATE tasks SET title = ?, description = ?, status = ?,
+                priority = ?, due_date = ? WHERE id = ?
+            `, [task.title, task.description, task.status, task.priority, task.dueDate,
+                task.id
+            ]);
+        return querySuccess(result.affectedRows);
+    }
+
 }
 
 module.exports = TaskRepository;

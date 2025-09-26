@@ -15,6 +15,15 @@ class TaskService {
         return {status: 500, message: "Task could not be created"}
     }
 
+    async updateTask(task) {
+        let success = await this.taskRepository.updateTask(task);
+        if (success) {
+            return {status: 201, message: "Task updated succesfully"}
+        }
+        return {status: 500, message: "Task could not be updated"}
+    }
+    
+
 }
 
 module.exports = TaskService;
