@@ -56,9 +56,31 @@ class UserRepository {
         return rows[0];
     }
 
-    async deleteUserById(id) {
-        const [result] = await this.pool.query("DELETE FROM users WHERE id = ?", [id]);
-        return querySuccess(result.affectedRows);
+    async deleteUserById(id) {      
+        const connection = await this.pool.getConnection();
+        let success;
+        try {
+            await connection.beginTransaction();
+            let [rows] = await connection.query("SELECT project_id FROM projects WHERE user_id = ?", [id]);
+            let projectIds = rows.map(row => row.project_id);
+            // DELETE PROJECTS OWNED BY USER
+            if (projectIds.length !== 0) {
+                await connection.query("DELETE FROM project_users WHERE project_id IN (?)",[projectIds]);
+                await connection.query("DELETE FROM projects where project_id IN (?)", [projectIds]);
+            }
+            // DELETE PROJECTS WHERE USER IS INVOLVED
+            await connection.query("DELETE FROM project_users WHERE user_id = ?", [id]);
+            // DELETE USER
+            await connection.query("DELETE FROM users WHERE id = ?", [id]);
+            success = true;
+        } catch(error) {     
+            await connection.rollback();
+            console.error("Error al eliminar proyecto:", error);
+            success = false;
+        } finally {
+            connection.release();
+            return success;
+        }
     }
 
 }
