@@ -26,6 +26,10 @@ initDatabase()
     const userRoutes = require('./routes/userRoutes');
     app.use('/api/users', userRoutes);
 
+    // project routes
+    const projectRoutes = require('./routes/projectRoutes');
+    app.use('/api/projects', projectRoutes);
+
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);
     });

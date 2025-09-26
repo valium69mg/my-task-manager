@@ -50,15 +50,17 @@ class ProjectService {
         return {status: 500, message: "Project users could not be created"}
     }
 
-    async deleteProjectUsers(userIds) {
-        let success = await this.projectRepository.deleteProjectUsers(userIds);
+    async deleteProjectUsers(userIds, projectId) {
+        let success = await this.projectRepository.deleteProjectUsers(userIds, projectId);
         if (success) {
             return {status: 201, message: "Project users deleted successfully"}
         }
         return {status: 500, message: "Project users could not be deleted"}
     }
 
-    
+    async getUserIdsByProjectId(projectId) {
+        return this.projectRepository.getUserIdsByProjectId(projectId);
+    }
 }
 
 module.exports = ProjectService;

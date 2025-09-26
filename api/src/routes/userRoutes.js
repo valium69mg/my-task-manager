@@ -10,7 +10,7 @@ const userRepository = new UserRepository(getPool());
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-router.post('/', authMiddleware, (req, res) => userController.register(req, res));
+router.post('/', (req, res) => userController.register(req, res));
 router.put('/', authMiddleware, (req, res) => userController.update(req, res));
 router.put('/password/:id', authMiddleware, (req, res) => userController.updateUserPassword(req, res));
 router.get('/all', authMiddleware, (req, res) => userController.getAllUsers(req, res));

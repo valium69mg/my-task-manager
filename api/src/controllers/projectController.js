@@ -43,8 +43,14 @@ class ProjectController {
     async getAllProjects(req, res) {
         try {
 
-            return await this.projectService.getAllProjects();
-        
+            let result =  await this.projectService.getAllProjects();
+            
+            if (result) {
+                return res.status(200).json(result);
+            } else {
+                return res.status(200).json([]);
+            }
+
         } catch(error) {
             console.error('Error:', error);
             return res.status(500).json({status:500, message: 'Internal server error' });
@@ -55,7 +61,11 @@ class ProjectController {
         try{
             const id = req.params.id;
             const project = await this.projectService.getProjectById(id);
-            return res.status(200).json(project);
+            if (project) {
+                return res.status(200).json(project);
+            } else {
+                return res.status(404).json({status:404, message: "Project not found"});
+            }
         } catch(error) {
             console.error('Error:', error);
             return res.status(500).json({status:500, message: 'Internal server error' });
@@ -75,7 +85,7 @@ class ProjectController {
 
     async createProjectUsers(req, res) {
         try {
-
+            
             const data = req.body;
             const response = await this.projectService.createProjectUsers(data.userIds, data.projectId);
 
@@ -89,9 +99,9 @@ class ProjectController {
 
     async deleteProjectUsers(req, res) {
         try {
-            const userIds = req.body;
+            const data = req.body;
 
-            let response = await this.projectService.deleteProjectUsers(userIds);
+            let response = await this.projectService.deleteProjectUsers(data.userIds, data.projectId);
 
             return res.status(response.status).json(response);
 
@@ -99,6 +109,20 @@ class ProjectController {
             console.error('Error:', error);
             return res.status(500).json({status:500, message: 'Internal server error' });
         }
+    }
+
+    async getUserIdsByProjectId(req, res) {
+       try {
+            const id = req.params.id;
+
+            const userIds = await this.projectService.getUserIdsByProjectId(id);
+
+            return res.status(200).json(userIds);
+            
+        } catch(error) {
+            console.error('Error:', error);
+            return res.status(500).json({status:500, message: 'Internal server error' });
+        } 
     }
 
 }

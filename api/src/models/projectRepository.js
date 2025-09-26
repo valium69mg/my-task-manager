@@ -21,9 +21,9 @@ class ProjectRepository {
     async updateProject(project) {
         const [result] = await this.pool.query(`
             UPDATE projects SET name = ?, description = ?, status = ?, start_date = ?,
-                end_date = ?, user_id = ? WHERE id = ?
+                end_date = ? WHERE id = ?
             `, [project.name, project.description, project.status, project.startDate, 
-                project.endDate, project.userId, project.id
+                project.endDate, project.id
             ]);
         return querySuccess(result.affectedRows);
     }
@@ -67,21 +67,39 @@ class ProjectRepository {
     }
 
     async createProjectUsers(userIds, projectId) {
-        const values = userIds.map(id => [projectId, id]);
+        const [userRows] = await this.pool.query(`
+            SELECT user_id FROM project_users WHERE project_id = ?
+        `, [projectId]);
+        const existingUsers = userRows.map(ur => ur.user_id);
+        const values = userIds
+            .filter(id => !existingUsers.includes(id))
+            .map(id => [projectId, id]);
+        if (values.length === 0) {
+            return true;
+        }
         const [result] = await this.pool.query(`
             INSERT INTO project_users (project_id, user_id)
             VALUES ?
-            `, [values]);
-        return querySuccess(result.affectedRows)    
+        `, [values]);
+
+        return querySuccess(result.affectedRows);
     }
 
-    async deleteProjectUsers(userIds) {
+
+    async deleteProjectUsers(userIds, projectId) {
         if (!userIds || userIds.length === 0) return false;
         const [result] = await this.pool.query(`
             DELETE FROM project_users
-            WHERE user_id IN (?)
-        `, [userIds]);
+            WHERE project_id = ? AND user_id IN (?) 
+        `, [projectId, userIds]);
         return querySuccess(result.affectedRows)
+    }
+
+    async getUserIdsByProjectId(projectId) {
+        const [rows] = await this.pool.query("SELECT user_id FROM project_users WHERE project_id = ?",
+            [projectId]
+        );
+        return rows.map(r => r.user_id);
     }
 
 }

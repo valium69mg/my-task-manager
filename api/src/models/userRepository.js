@@ -61,12 +61,12 @@ class UserRepository {
         let success;
         try {
             await connection.beginTransaction();
-            let [rows] = await connection.query("SELECT project_id FROM projects WHERE user_id = ?", [id]);
-            let projectIds = rows.map(row => row.project_id);
+            let [rows] = await connection.query("SELECT id FROM projects WHERE user_id = ?", [id]);
+            let projectIds = rows.map(row => row.id);
             // DELETE PROJECTS OWNED BY USER
             if (projectIds.length !== 0) {
                 await connection.query("DELETE FROM project_users WHERE project_id IN (?)",[projectIds]);
-                await connection.query("DELETE FROM projects where project_id IN (?)", [projectIds]);
+                await connection.query("DELETE FROM projects where id IN (?)", [projectIds]);
             }
             // DELETE PROJECTS WHERE USER IS INVOLVED
             await connection.query("DELETE FROM project_users WHERE user_id = ?", [id]);
