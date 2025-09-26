@@ -30,6 +30,10 @@ initDatabase()
     const projectRoutes = require('./routes/projectRoutes');
     app.use('/api/projects', projectRoutes);
 
+    // task routes 
+    const taskRoutes = require('./routes/taskRoutes');
+    app.use('/api/tasks', taskRoutes);
+
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);
     });
