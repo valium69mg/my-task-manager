@@ -12,5 +12,7 @@ const taskController = new TaskController(taskService);
 
 router.post('/:id', authMiddleware, (req, res) => taskController.createTask(req, res));
 router.put('/', authMiddleware, (req, res) => taskController.updateTask(req, res));
+router.get('/all', authMiddleware, (req, res) => taskController.getAllTasks(req, res));
+router.get('/:id', authMiddleware, (req, res) => taskController.getTaskById(req, res));
 
 module.exports = router;

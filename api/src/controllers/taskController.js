@@ -35,6 +35,34 @@ class TaskController {
             return res.status(500).json({status:500, message: 'Internal server error' });
         }
     }
+
+    async getAllTasks(req, res) {
+        try {
+
+            const tasks = await this.taskService.getAllTasks();
+
+            return res.status(200).json(tasks);
+        } catch(error) {
+            console.error('Error:', error);
+            return res.status(500).json({status:500, message: 'Internal server error' });
+        }
+    }
+
+    async getTaskById(req, res) {
+        try{ 
+            const id = req.params.id;
+
+            let task = await this.taskService.getTaskById(id);
+            if (task) {
+                return res.status(200).json(task);
+            } else {
+                return res.status(404).json({status: 404, message: "Task not found"});
+            }
+        } catch(error) {
+            console.error('Error:', error);
+            return res.status(500).json({status:500, message: 'Internal server error' });
+        }
+    }
 }
 
 module.exports = TaskController;

@@ -30,6 +30,19 @@ class TaskRepository {
         return querySuccess(result.affectedRows);
     }
 
+    async getAllTasks() {
+        const [rows] = await this.pool.query("SELECT * FROM tasks");
+        return rows;
+    }
+
+    async getTaskById(id) {
+        const [rows] = await this.pool.query("SELECT * from tasks WHERE id = ?", [id])
+        if (rows.length === 0) {
+            return null;
+        }
+        return rows[0];
+    }
+
 }
 
 module.exports = TaskRepository;

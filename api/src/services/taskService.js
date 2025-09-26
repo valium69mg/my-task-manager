@@ -22,7 +22,15 @@ class TaskService {
         }
         return {status: 500, message: "Task could not be updated"}
     }
-    
+
+    async getAllTasks() {
+        return await this.taskRepository.getAllTasks();
+    }
+
+    async getTaskById(id) {
+        const task = await this.taskRepository.getTaskById(id);
+        return task;
+    }
 
 }
 
