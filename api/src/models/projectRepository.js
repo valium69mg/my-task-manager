@@ -70,10 +70,16 @@ class ProjectRepository {
         const [userRows] = await this.pool.query(`
             SELECT user_id FROM project_users WHERE project_id = ?
         `, [projectId]);
-        const existingUsers = userRows.map(ur => ur.user_id);
+        console.log(userRows);
+        let existingUsers = [];
+        if (userRows.length !== 0) {
+            existingUsers = userRows.map(ur => ur.user_id);
+        }
+        console.log(existingUsers);
         const values = userIds
             .filter(id => !existingUsers.includes(id))
             .map(id => [projectId, id]);
+        console.log(values);
         if (values.length === 0) {
             return true;
         }
@@ -81,18 +87,17 @@ class ProjectRepository {
             INSERT INTO project_users (project_id, user_id)
             VALUES ?
         `, [values]);
-
+        console.log(result);
         return querySuccess(result.affectedRows);
     }
 
 
     async deleteProjectUsers(userIds, projectId) {
-        if (!userIds || userIds.length === 0) return false;
-        const [result] = await this.pool.query(`
+         await this.pool.query(`
             DELETE FROM project_users
             WHERE project_id = ? AND user_id IN (?) 
         `, [projectId, userIds]);
-        return querySuccess(result.affectedRows)
+        return true;
     }
 
     async getUserIdsByProjectId(projectId) {
