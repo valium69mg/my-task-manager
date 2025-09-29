@@ -32,6 +32,14 @@ class TaskService {
         return task;
     }
 
+    async deleteTaskById(id) {
+        let success = await this.taskRepository.deleteTaskById(id);
+        if (success) {
+            return {status: 201, message: "Task delete succesfully"}
+        }
+        return {status: 500, message: "Task could not be deleted"}
+    }
+
 }
 
 module.exports = TaskService;

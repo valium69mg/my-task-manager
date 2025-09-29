@@ -43,6 +43,36 @@ class TaskRepository {
         return rows[0];
     }
 
+    async deleteTaskById(id) {
+        const connection = await this.pool.getConnection();
+        let success = false;
+
+        try {
+            await connection.beginTransaction();
+
+            await connection.query(
+                `DELETE FROM task_users WHERE task_id = ?`,
+                [id]
+            );
+
+            await connection.query(
+                `DELETE FROM tasks WHERE id = ?`,
+                [id]
+            );
+
+            await connection.commit();
+            success = true;
+        } catch (error) {
+            console.error("Error deleting task:", error);
+            await connection.rollback();
+        } finally {
+            connection.release();
+        }
+
+        return success;
+    }
+
+
 }
 
 module.exports = TaskRepository;
