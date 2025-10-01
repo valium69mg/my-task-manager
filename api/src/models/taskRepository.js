@@ -100,6 +100,14 @@ class TaskRepository {
         `, [taskId, userIds]);
         return true;
     }
+
+    async getUserIdsByTaskId(taskId) {
+        const [rows] = await this.pool.query("SELECT user_id FROM task_users WHERE task_id = ?",
+            [taskId]
+        );
+        return rows.map(r => r.user_id);
+    }
+
 }
 
 module.exports = TaskRepository;

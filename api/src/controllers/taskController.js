@@ -91,10 +91,25 @@ class TaskController {
     async deleteTaskUsers(req, res) {
         try {
             const data = req.body;
-            
+
             let response = await this.taskService.deleteTaskUsers(data.userIds, data.taskId);
 
             return res.status(response.status).json(response);
+
+        } catch(error) {
+            console.error('Error:', error);
+            return res.status(500).json({status:500, message: 'Internal server error' });
+        }
+    }
+
+    async getUserIdsByTaskId(req , res) {
+        try {
+
+            const taskId = req.params.id;
+
+            let userIds = await this.taskService.getUserIdsByTaskId(taskId);
+
+            return res.status(200).json(userIds);
 
         } catch(error) {
             console.error('Error:', error);

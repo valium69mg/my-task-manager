@@ -57,6 +57,10 @@ class TaskService {
         return {status: 500, message: "Task users could not be created"}
 
     }
+
+    async getUserIdsByTaskId(taskId) {
+        return await this.taskRepository.getUserIdsByTaskId(taskId);
+    }
 }
 
 module.exports = TaskService;
