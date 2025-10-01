@@ -75,6 +75,21 @@ class TaskController {
         }
     }
 
+    async createTaskUsers(req, res) {
+        try {
+            const data = req.body;
+            let response = await this.taskService.createTaskUsers(data.userIds, data.taskId);
+
+            return res.status(response.status).json(response);
+
+        } catch(error) {
+            console.error('Error:', error);
+            return res.status(500).json({status:500, message: 'Internal server error' });
+        }
+    }
+
+
+
 }
 
 module.exports = TaskController;

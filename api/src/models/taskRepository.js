@@ -72,6 +72,26 @@ class TaskRepository {
         return success;
     }
 
+    async createTaskUsers(userIds, taskId) {
+        const [userRows] = await this.pool.query(`
+            SELECT user_id FROM task_users WHERE task_id = ?
+        `, [taskId]);
+        let existingUsers = [];
+        if (userRows.length !== 0) {
+            existingUsers = userRows.map(ur => ur.user_id);
+        }
+        const values = userIds
+            .filter(id => !existingUsers.includes(id))
+            .map(id => [taskId, id]);
+        if (values.length === 0) {
+            return true;
+        }
+        const [result] = await this.pool.query(`
+            INSERT INTO task_users (task_id, user_id)
+            VALUES ?
+        `, [values]);
+        return querySuccess(result.affectedRows);
+    }
 
 }
 
