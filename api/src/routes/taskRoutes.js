@@ -11,6 +11,7 @@ const taskService = new TaskService(taskRepository);
 const taskController = new TaskController(taskService);
 
 router.post('/user', authMiddleware, (req, res) => taskController.createTaskUsers(req, res));
+router.delete('/user', authMiddleware, (req, res) => taskController.deleteTaskUsers(req, res));
 router.post('/:id', authMiddleware, (req, res) => taskController.createTask(req, res));
 router.put('/', authMiddleware, (req, res) => taskController.updateTask(req, res));
 router.get('/all', authMiddleware, (req, res) => taskController.getAllTasks(req, res));

@@ -49,6 +49,14 @@ class TaskService {
         }
     }
 
+    async deleteTaskUsers(userIds, taskId) {
+        let success = await this.taskRepository.deleteTaskUsers(userIds, taskId);
+        if (success) {
+            return {status: 200, message: "Task users deleted successfully"}
+        }
+        return {status: 500, message: "Task users could not be created"}
+
+    }
 }
 
 module.exports = TaskService;

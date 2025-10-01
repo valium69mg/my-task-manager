@@ -93,6 +93,13 @@ class TaskRepository {
         return querySuccess(result.affectedRows);
     }
 
+    async deleteTaskUsers(userIds, taskId) {
+        await this.pool.query(`
+            DELETE FROM task_users
+            WHERE task_id = ? AND user_id IN (?) 
+        `, [taskId, userIds]);
+        return true;
+    }
 }
 
 module.exports = TaskRepository;
