@@ -70,16 +70,13 @@ class ProjectRepository {
         const [userRows] = await this.pool.query(`
             SELECT user_id FROM project_users WHERE project_id = ?
         `, [projectId]);
-        console.log(userRows);
         let existingUsers = [];
         if (userRows.length !== 0) {
             existingUsers = userRows.map(ur => ur.user_id);
         }
-        console.log(existingUsers);
         const values = userIds
             .filter(id => !existingUsers.includes(id))
             .map(id => [projectId, id]);
-        console.log(values);
         if (values.length === 0) {
             return true;
         }
@@ -87,7 +84,6 @@ class ProjectRepository {
             INSERT INTO project_users (project_id, user_id)
             VALUES ?
         `, [values]);
-        console.log(result);
         return querySuccess(result.affectedRows);
     }
 
